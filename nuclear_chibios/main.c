@@ -17,7 +17,7 @@ int main() {
 
   /*
    * Normal main() thread activity, in this demo it does nothing except
-   * sleeping in a loop and check the button state.
+   * sleeping in a loop.
    */
   while (true) {
     chThdSleepMilliseconds(500);
