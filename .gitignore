@@ -60,4 +60,4 @@ dkms.conf
 
 # Makefile build files
 **.dep/
-**.build/
+**build/
