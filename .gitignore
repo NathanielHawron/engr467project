@@ -53,3 +53,11 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# Julian's bloatware
+**.vscode/
+**compile_commands.json
+
+# Makefile build files
+**.dep/
+**.build/

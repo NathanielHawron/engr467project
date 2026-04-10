@@ -1,3 +1,5 @@
+#pragma once
+
 // Blink built-in LED at a frequency
 void taskB();
 // Set the frequency of taskB using ICP
