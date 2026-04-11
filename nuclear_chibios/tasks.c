@@ -1,7 +1,9 @@
 #include "tasks.h"
 
+#include "ch.h"
 #include "hal.h"
 #include "board.h"
+#include "chmboxes.h"
 
 // Blink built-in LED at a frequency
 void taskB() {
@@ -27,8 +29,14 @@ void taskB() {
   }
 }
 // Set the frequency of taskB using ICP
-void taskCB() {
+void taskCB(mailbox_t* mb) {
+  const static int newBlinkDuration = 500;
 
+  chThdSleepMicroseconds(5000);
+
+  (void)chMBPostI(mb, newBlinkDuration, TIME_INFINITE);
+
+  //while (true) { }
 }
 // Monitor all other tasks for period, duration, average actual duration, and failure/rejection counts
 void taskM() {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "chmboxes.h"
+
 #include "taskStats.h"
 
 // Blink built-in LED at a frequency
@@ -7,7 +9,7 @@ TaskState taskBState;
 void taskB();
 // Set the frequency of taskB using ICP
 TaskState taskCBState;
-void taskCB();
+void taskCB(mailbox_t* mb);
 // Monitor all other tasks for period, duration, average actual duration, and failure/rejection counts
 TaskState taskMState;
 void taskM();
