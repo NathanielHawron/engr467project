@@ -26,7 +26,8 @@ int main() {
 
   chMBObjectInit(&mbBlink, mbBlink_buffer, MAILBOX_SIZE);
 
-  chThdCreateStatic(waThread_B, sizeof(waThread_B), NORMALPRIO, Thread_B, NULL);
+  chThdCreateStatic(waThread_B, sizeof(waThread_B), NORMALPRIO, Thread_B, &mbBlink);
+  chThdCreateStatic(waThread_CB, sizeof(waThread_CB), NORMALPRIO, Thread_CB, &mbBlink);
 
   /*
    * Normal main() thread activity, in this demo it does nothing except
