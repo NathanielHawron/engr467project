@@ -30,12 +30,13 @@ void taskB() {
 }
 // Set the frequency of taskB using ICP
 void taskCB(mailbox_t* mb) {
-  const static int newBlinkDuration = 500;
+  static int newBlinkDuration = 500;
 
   chThdSleepMicroseconds(5000);
 
-  (void)chMBPostI(mb, newBlinkDuration, TIME_INFINITE);
+  (void)chMBPostTimeout(mb, newBlinkDuration, TIME_INFINITE);
 
+  chThdExit(MSG_OK);
   //while (true) { }
 }
 // Monitor all other tasks for period, duration, average actual duration, and failure/rejection counts
