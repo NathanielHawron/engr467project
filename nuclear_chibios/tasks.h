@@ -4,6 +4,8 @@
 
 // Blink built-in LED at a frequency
 TaskState taskBState;
+mailbox_t taskBInbox;
+msg_t taskBInboxBuffer;
 void taskB();
 // Set the frequency of taskB using ICP
 TaskState taskCBState;

@@ -12,6 +12,7 @@ static THD_FUNCTION(Thread_B, args) {
 int main() {
   halInit();
   chSysInit();
+  chMBObjectInit(&taskBInbox, &taskBInboxBuffer, 1);
 
   chThdCreateStatic(waThread_B, sizeof(waThread_B), NORMALPRIO, Thread_B, NULL);
 

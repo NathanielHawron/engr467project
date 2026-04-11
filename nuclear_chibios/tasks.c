@@ -5,13 +5,18 @@
 
 // Blink built-in LED at a frequency
 void taskB() {
-  // in ms
+  // In ms
   static int blinkDuration = 1000;
+  // Time between release and dedline
   static int maxDelay = 100;
 
   while (1) {
     // Start Task
     palToggleLine(LINE_LED_GREEN);
+    msg_t msg;
+    if(chMBFetchI(taskBInbox,&msg) == MSG_OK){
+      blinkDuration = (int)msg;
+    }
     // End Task
     
     // Move current stats into previous stats
@@ -28,7 +33,31 @@ void taskB() {
 }
 // Set the frequency of taskB using ICP
 void taskCB() {
-
+  // In ms
+  static int changeDelay = 10000;
+  // Time between release and deadline
+  static int maxDelay = 100;
+  static int durations[10] = {
+    1000, 750, 500, 250, 100, 50, 150, 400, 700, 1500
+  };
+  static int durationIndex = 0;
+  while(1){
+    // Start Task
+    durationIndex = (durationIndex+1)%10;
+    chMBPostI(taskBInbox, (msg_t)durations[durationIndex]);
+    // End Task
+    
+    // Move current stats into previous stats
+    taskCBState.lastComplete = chVTGetSystemTime();
+    taskCBState.lastDeadline = taskCBState.nextDeadline;
+    // Determine next wakeup and deadline timestamp
+    taskCBState.nextWake += TIME_MS2I(blinkDuration);
+    taskCBState.nextDeadline = taskCBState.nextWake + TIME_MS2I(maxDelay);
+    // Increment complete count, should be at most 1 when checked once per frame
+    ++taskCBState.completesSinceLastCheck;
+    // Wait until next release
+    chThdSleepUntil(e.nextWake);
+  }
 }
 // Monitor all other tasks for period, duration, average actual duration, and failure/rejection counts
 void taskM() {
