@@ -5,7 +5,7 @@
 #include "hal.h"
 
 // Blink built-in LED at a frequency
-void taskB() {
+void taskB(void) {
   // In ms
   static int blinkDuration = 1000;
   // Time between release and dedline
@@ -35,7 +35,7 @@ void taskB() {
   }
 }
 // Set the frequency of taskB using ICP
-void taskCB() {
+void taskCB(void) {
   // In ms
   static int changeDelay = 10000;
   // Time between release and deadline
@@ -66,13 +66,13 @@ void taskCB() {
   }
 }
 // Monitor all other tasks for period, duration, average actual duration, and failure/rejection counts
-void taskM() {
+void taskM(void) {
   TaskState taskMState = { 0 };
   while(1){
   }
 }
 // Send taskM data over Serial using IPC, non-preemptable
-void taskS() {
+void taskS(void) {
   TaskState taskSState = { 0 };
   // Enter critical section
   chSysLock();
@@ -81,7 +81,7 @@ void taskS() {
   chSysUnlock();
 }
 // Compute math operations provided by Serial, non-preemptable
-void taskC() {
+void taskC(void) {
   TaskState taskCState = { 0 };
   // Enter critical section
   chSysLock();
@@ -90,7 +90,7 @@ void taskC() {
   chSysUnlock();
 }
 // Try to fail other tasks, using methods that work on naive task schedulers (100% utilization, short tasks, acquire unused resources indefinately, aqcuire random resources)
-void taskF() {
+void taskF(void) {
   TaskState taskFState = { 0 };
 
 }

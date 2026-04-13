@@ -18,7 +18,7 @@ static THD_FUNCTION(Thread_CB, arg) {
   taskCB();
 }
 
-int main() {
+int main(void) {
   halInit();
   chSysInit();
   chMBObjectInit(&taskBInbox, &taskBInboxBuffer, 1);
