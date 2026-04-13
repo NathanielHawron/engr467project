@@ -3,6 +3,7 @@
 #include "taskStats.h"
 #include "ch.h"
 
+
 // Blink built-in LED at a frequency
 extern TaskState taskBState; // defined in main.c !
 extern mailbox_t taskBInbox; // defined in main.c !
@@ -13,6 +14,8 @@ extern TaskState taskCBState;
 void taskCB(void);
 // Monitor all other tasks for period, duration, average actual duration, and failure/rejection counts
 extern TaskState taskMState;
+extern TaskStats taskStats[6] = { 0 };
+extern mutex_t taskStatsMutex;
 void taskM(void);
 // Send taskM data over Serial using IPC, non-preemptable
 extern TaskState taskSState;

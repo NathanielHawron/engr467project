@@ -4,6 +4,9 @@
 #include "ch.h"
 #include "hal.h"
 
+// Enters a critical section, runs code, then leaves (ensures lock/unlock pairs)
+#define CRITICAL_SECTION(x) chSysLock();x chSysUnlock();
+
 // Blink built-in LED at a frequency
 void taskB(void) {
   // In ms
@@ -27,6 +30,7 @@ void taskB(void) {
     chThdSleepUntil(taskBState.nextWake);
   }
 }
+
 // Set the frequency of taskB using ICP
 void taskCB(void) {
   // In ms
@@ -51,32 +55,55 @@ void taskCB(void) {
     chThdSleepUntil(taskCBState.nextWake);
   }
 }
+
 // Monitor all other tasks for period, duration, average actual duration, and failure/rejection counts
 void taskM(void) {
+  // Period should be lower than any other period, except task F since its malicious
+  static int period = 100;
+  static int maxDelay = 75;
   TaskState taskMState = { 0 };
+  TaskState *taskStates[6] = {
+    &taskBState, &taskCBState, &taskMState, &taskSState, &taskCState, &taskFState
+  };
+  
   while(1){
+    // Start task
+    chMtxLock(&taskStatsMutex);
+    for(int i=0;i<6;++i){
+      reviewTask(taskStates[i], &taskStats[i]);
+    }
+    chMtxUnlock(&taskStatsMutex);
+    // End task
+    updateTaskState(&taskMState, period, maxDelay);
+    // Wait until next release
+    chThdSleepUntil(taskMState.nextWake);
   }
 }
+
 // Send taskM data over Serial using IPC, non-preemptable
 void taskS(void) {
   TaskState taskSState = { 0 };
-  // Enter critical section
-  chSysLock();
-
-  // Leave critical section
-  chSysUnlock();
+  while(1){
+    CRITICAL_SECTION(
+  
+    )
+  }
 }
+
 // Compute math operations provided by Serial, non-preemptable
 void taskC(void) {
   TaskState taskCState = { 0 };
-  // Enter critical section
-  chSysLock();
-
-  // Leave critical section
-  chSysUnlock();
+  while(1){
+    CRITICAL_SECTION(
+  
+    )
+  }
 }
+
 // Try to fail other tasks, using methods that work on naive task schedulers (100% utilization, short tasks, acquire unused resources indefinately, aqcuire random resources)
 void taskF(void) {
   TaskState taskFState = { 0 };
+  while(1){
 
+  }
 }

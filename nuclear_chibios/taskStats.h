@@ -9,10 +9,8 @@ typedef struct _task_state {
 } TaskState;
 typedef struct _task_stats {
     uint32_t period;
-    uint32_t durationHistory[100];
+    uint32_t lastWake;
     uint32_t duration;
-    uint_fast8_t durationHistoryIndex;
-    uint32_t rejectionCount;
     uint32_t failureCount;
 } TaskStats;
 
@@ -28,6 +26,17 @@ inline void updateTaskState(TaskState *taskState, int wakeupDelay, int maxTimeTo
     ++taskState->completesSinceLastCheck;
 }
 
-inline void reviewTask(TaskStats* stat, TaskState* ts) {
-    // do something...
+inline void reviewTask(TaskStats* stats, TaskState* state) {
+    // Ignore tasks that haven't completed since last check
+    if(state->completesSinceLastCheck == 0){
+        return;
+    }
+    state->completesSinceLastCheck = 0;
+    // Completing after deadline means failure
+    if(state->lastComplete > state->lastDeadline){
+        ++stats->failureCount;
+    }
+    stats->period = state->nextDeadline - state->lastDeadline;
+    stats->duration = state->lastComplete - stats->lastWake;
+    stats->lastWake = state->nextWake;
 }
