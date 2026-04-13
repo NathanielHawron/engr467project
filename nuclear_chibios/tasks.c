@@ -22,14 +22,7 @@ void taskB(void) {
     }
     // End Task
     
-    // Move current stats into previous stats
-    taskBState.lastComplete = chVTGetSystemTime();
-    taskBState.lastDeadline = taskBState.nextDeadline;
-    // Determine next wakeup and deadline timestamp
-    taskBState.nextWake += TIME_MS2I(blinkDuration);
-    taskBState.nextDeadline = taskBState.nextWake + TIME_MS2I(maxDelay);
-    // Increment complete count, should be at most 1 when checked once per frame
-    ++taskBState.completesSinceLastCheck;
+    updateTaskState(&taskBState, blinkDuration, maxDelay);
     // Wait until next release
     chThdSleepUntil(taskBState.nextWake);
   }
@@ -53,14 +46,7 @@ void taskCB(void) {
     chMBPostI(&taskBInbox, (msg_t)durations[durationIndex]);
     // End Task
     
-    // Move current stats into previous stats
-    taskCBState.lastComplete = chVTGetSystemTime();
-    taskCBState.lastDeadline = taskCBState.nextDeadline;
-    // Determine next wakeup and deadline timestamp
-    taskCBState.nextWake += TIME_MS2I(changeDelay);
-    taskCBState.nextDeadline = taskCBState.nextWake + TIME_MS2I(maxDelay);
-    // Increment complete count, should be at most 1 when checked once per frame
-    ++taskCBState.completesSinceLastCheck;
+    updateTaskState(&taskCState, changeDelay, maxDelay);
     // Wait until next release
     chThdSleepUntil(taskCBState.nextWake);
   }
