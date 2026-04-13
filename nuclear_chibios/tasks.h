@@ -1,24 +1,25 @@
 #pragma once
 
 #include "taskStats.h"
+#include "ch.h"
 
 // Blink built-in LED at a frequency
-TaskState taskBState;
-mailbox_t taskBInbox;
-msg_t taskBInboxBuffer;
+extern TaskState taskBState; // defined in main.c !
+extern mailbox_t taskBInbox; // defined in main.c !
+extern msg_t taskBInboxBuffer;
 void taskB();
 // Set the frequency of taskB using ICP
-TaskState taskCBState;
+extern TaskState taskCBState;
 void taskCB();
 // Monitor all other tasks for period, duration, average actual duration, and failure/rejection counts
-TaskState taskMState;
+extern TaskState taskMState;
 void taskM();
 // Send taskM data over Serial using IPC, non-preemptable
-TaskState taskSState;
+extern TaskState taskSState;
 void taskS();
 // Compute math operations provided by Serial, non-preemptable
-TaskState taskCState;
+extern TaskState taskCState;
 void taskC();
 // Try to fail other tasks, using methods that work on naive task schedulers (100% utilization, short tasks, acquire unused resources indefinately, aqcuire random resources)
-TaskState taskFState;
+extern TaskState taskFState;
 void taskF();
