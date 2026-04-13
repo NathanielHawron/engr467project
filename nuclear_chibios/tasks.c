@@ -28,7 +28,7 @@ void taskB() {
     // Increment complete count, should be at most 1 when checked once per frame
     ++taskBState.completesSinceLastCheck;
     // Wait until next release
-    chThdSleepUntil(e.nextWake);
+    chThdSleepUntil(taskBState.nextWake);
   }
 }
 // Set the frequency of taskB using ICP
