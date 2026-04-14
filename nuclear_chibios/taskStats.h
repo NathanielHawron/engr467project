@@ -4,7 +4,7 @@
 #include "ch.h"
 
 typedef struct _task_state {
-    systime_t nextWake, nextDeadline, lastComplete, lastDeadline;
+    systime_t nextWake, lastWake, nextDeadline, lastComplete, lastDeadline;
     uint32_t completesSinceLastCheck;
 } TaskState;
 typedef struct _task_stats {
