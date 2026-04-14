@@ -3,12 +3,17 @@
 
 #include "tasks.h"
 
+static SerialConfig uartCfg = {
+  .speed = 115200,
+  .cr2 = USART_CR2_STOP1_BITS
+};
 
 msg_t taskBInboxBuffer;   // extern <- tasks.h !
 mailbox_t taskBInbox;     // extern <- tasks.h !
 
 static THD_WORKING_AREA(waThread_B, 128);
 static THD_WORKING_AREA(waThread_CB, 128);
+static THD_WORKING_AREA(waThread_S, 1024);
 
 mutex_t taskStatsMutex; // extern <- tasks.h !
 TaskStats taskStats[6] = {{ 0 }}; // extern <- tasks.h !
@@ -46,16 +51,20 @@ static THD_FUNCTION(Thread_F, arg) {
 int main(void) {
   halInit();
   chSysInit();
+
+  (void)sdStart(&SD2, &uartCfg);
+
   chMBObjectInit(&taskBInbox, &taskBInboxBuffer, 1);
 
   chThdCreateStatic(waThread_B, sizeof(waThread_B), NORMALPRIO, Thread_B, NULL);
   chThdCreateStatic(waThread_CB, sizeof(waThread_CB), NORMALPRIO, Thread_CB, NULL);
+  chThdCreateStatic(waThread_S, sizeof(waThread_S), NORMALPRIO, Thread_S, NULL);
 
   /*
    * Normal main() thread activity, in this demo it does nothing except
    * sleeping in a loop.
    */
-  while (true) {
-    chThdSleepMilliseconds(500);
-  }
+  // while (true) {
+  //   chThdSleepMilliseconds(500);
+  // }
 }

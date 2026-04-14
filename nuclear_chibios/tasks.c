@@ -1,6 +1,8 @@
 #include "tasks.h"
 #include "taskStats.h"
 
+#include "string.h"
+
 #include "ch.h"
 #include "hal.h"
 
@@ -92,10 +94,18 @@ void taskM(void) {
 }
 // Send taskM data over Serial using IPC, non-preemptable
 void taskS(void) {
+  const char *msg = "Hello, World!";
+
+  static int period_ms = 5000;
+  static int maxDelay_ms = 500;
+
   while(1){
     CRITICAL_SECTION(
-  
+      sdWriteTimeout(&SD2, (const uint8_t *)msg, strlen(msg), TIME_MS2I(maxDelay_ms));
     )
+
+    updateTaskState(&taskSState, period_ms, maxDelay_ms);
+    chThdSleepUntil(taskSState.nextWake);
   }
 }
 // Compute math operations provided by Serial, non-preemptable
