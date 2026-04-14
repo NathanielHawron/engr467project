@@ -10,8 +10,8 @@
 
 // Enters a critical section, runs code, then leaves (ensures lock/unlock pairs)
 #define CRITICAL_SECTION(x) do { \
-  chSysLock();      \
-  x                  \
+  chSysLock();        \
+  x                   \
   chSysUnlock();      \
 } while (0);
 
@@ -63,7 +63,7 @@ void taskCB(void) {
     chMBPostI(&taskBInbox, (msg_t)durations[durationIndex]);
     // End Task
     
-    updateTaskState(&taskCState, changeDelay, maxDelay);
+    updateTaskState(&taskCBState, changeDelay, maxDelay);
     // Wait until next release
     chThdSleepUntil(taskCBState.nextWake);
   }
@@ -99,11 +99,10 @@ void taskS(void) {
   const char* msg = "Hello, World!\r\n";
 
   const char* taskNames[6] = {
-    "taskB",
-    "TaskCB",
+    "taskB", "TaskCB",
     "taskM",
     "taskS",
-    "taskCS",
+    "taskC",
     "taskF"
   };
 
@@ -117,29 +116,30 @@ void taskS(void) {
       for (int i = 0; i < 6; ++i) {
         TaskStats *stats = &taskStats[i];
         uint32_t period = stats->period;
-        uint32_t duration = stats->period;
+        uint32_t duration = stats->duration;
         uint32_t failureCount = stats-> failureCount;
 
-        // chprintf((sequential_stream_i *)&SD2,
-        //          "%s:\r\n\tperiod: %lu\r\n\tduration: %lu\r\n\tfailures: %lu\r\n",
-        //          taskNames[i], period, duration, failureCount);
+        chprintf((sequential_stream_i *)&SD2,
+                 "%s:\r\n\tperiod: %lu\r\n\tduration: %lu\r\n\tfailures: %lu\r\n",
+                 taskNames[i], period, duration, failureCount);
       }
     )
-    updateTaskState(&taskMState, period, maxDelay);
+    updateTaskState(&taskSState, period, maxDelay);
     // Wait until next release
-    chThdSleepUntil(taskMState.nextWake);
+    chThdSleepUntil(taskSState.nextWake);
   }
 }
 
 // Compute math operations provided by Serial, non-preemptable
 void taskC(void) {
   while(1){
-    char buff[64] = eq;
+    char buff[64] = { 0 };
     // Wait for serial input
-    taskState->nextWake = chVTGetSystemTime();
-    taskCState->nextDeadline = chTimeAddX(taskCState->nextWake, TIME_MS2I(5000));
+    buff[0] = sdGet(&SD2);
+    taskCState.nextWake = chVTGetSystemTime();
+    taskCState.nextDeadline = chTimeAddX(taskCState.nextWake, TIME_MS2I(5000));
     CRITICAL_SECTION(
-      // Read serial input
+      sdRead(&SD2, &buff[1], 63);
     )
     int index = 0;
     int a = 0;
@@ -184,9 +184,9 @@ void taskC(void) {
     if(abort == 0){
       // Send to task M mailbox
     }
-    taskCState->lastComplete = chVTGetSystemTime();
-    taskCState->lastDeadline = taskCState->nextDeadline;
-    ++taskCState->completesSinceLastCheck;
+    taskCState.lastComplete = chVTGetSystemTime();
+    taskCState.lastDeadline = taskCState.nextDeadline;
+    ++taskCState.completesSinceLastCheck;
   }
 }
 
@@ -216,9 +216,9 @@ void taskF(void) {
         chThdSleep(TIME_MS2I(1000));
         chMtxUnlock(&mut);
 
-        updateTaskState(&taskMState, 1, 100);
+        updateTaskState(&taskFState, 1, 100);
         // Wait until next release
-        chThdSleepUntil(taskMState.nextWake);
+        chThdSleepUntil(taskFState.nextWake);
         
         currentTask = shortTask;
       }break;
@@ -228,15 +228,15 @@ void taskF(void) {
         for(uint_fast16_t i=0;i<1000;++i){
           // Burn some clock cycles
           double s = sqrt(sin(cos(tan(num/den))));
-          updateTaskState(&taskMState, 1, 100);
+          updateTaskState(&taskFState, 1, 100);
           // Wait until next release
-          chThdSleepUntil(taskMState.nextWake);
+          chThdSleepUntil(taskFState.nextWake);
         }
         currentTask = fullUtilization;
         // Next task has different deadline requirements
-        updateTaskState(&taskMState, 100, 10000);
+        updateTaskState(&taskFState, 100, 10000);
         // Wait until next release
-        chThdSleepUntil(taskMState.nextWake);
+        chThdSleepUntil(taskFState.nextWake);
       }break;
       case fullUtilization:{
         for(uint16_t i=0;i<10000;++i){
@@ -245,9 +245,9 @@ void taskF(void) {
             volatile double s = sqrt(sin(cos(tan(num/den))));
           }
         }
-        updateTaskState(&taskMState, 2000, 100);
+        updateTaskState(&taskFState, 2000, 100);
         // Wait until next release
-        chThdSleepUntil(taskMState.nextWake);
+        chThdSleepUntil(taskFState.nextWake);
         currentTask = acquireResources;
       };break;
     }

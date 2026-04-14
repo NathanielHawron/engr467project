@@ -16,6 +16,6 @@ typedef struct _task_stats {
 } TaskStats;
 
 // wakeupDelay is period
-inline void updateTaskState(TaskState *taskState, int wakeupDelay, int maxTimeToComplete);
+void updateTaskState(TaskState *taskState, int wakeupDelay, int maxTimeToComplete);
 
-inline void reviewTask(TaskStats* stats, TaskState* state);
+void reviewTask(TaskStats* stats, TaskState* state);

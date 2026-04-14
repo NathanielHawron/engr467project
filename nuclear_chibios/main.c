@@ -52,13 +52,13 @@ int main(void) {
 
   sdStart(&SD2, &uartCfg);
 
-  chThdCreateStatic(waThread_B, sizeof(waThread_B), NORMALPRIO, Thread_B, NULL);
-  chThdCreateStatic(waThread_CB, sizeof(waThread_CB), NORMALPRIO, Thread_CB, NULL);
-  chThdCreateStatic(waThread_M, sizeof(waThread_M), NORMALPRIO, Thread_M, NULL);
+  chThdCreateStatic(waThread_B, sizeof(waThread_B), NORMALPRIO+4, Thread_B, NULL);
+  chThdCreateStatic(waThread_CB, sizeof(waThread_CB), NORMALPRIO+5, Thread_CB, NULL);
+  chThdCreateStatic(waThread_M, sizeof(waThread_M), NORMALPRIO+3, Thread_M, NULL);
 
-  chThdCreateStatic(waThread_S, sizeof(waThread_S), NORMALPRIO+1, Thread_S, NULL);
-  // chThdCreateStatic(waThread_C, sizeof(waThread_C), NORMALPRIO, Thread_C, NULL);
-  chThdCreateStatic(waThread_F, sizeof(waThread_F), NORMALPRIO, Thread_F, NULL);
+  chThdCreateStatic(waThread_S, sizeof(waThread_S), NORMALPRIO+2, Thread_S, NULL);
+  chThdCreateStatic(waThread_C, sizeof(waThread_C), NORMALPRIO, Thread_C, NULL);
+  chThdCreateStatic(waThread_F, sizeof(waThread_F), NORMALPRIO+1, Thread_F, NULL);
 
   /*
    * Normal main() thread activity, in this demo it does nothing except

@@ -21,7 +21,7 @@ void reviewTask(TaskStats* stats, TaskState* state) {
     if(state->lastComplete > state->lastDeadline){
         ++stats->failureCount;
     }
-    stats->period = state->nextDeadline - state->lastDeadline;
-    stats->duration = state->lastComplete - stats->lastWake;
+    stats->period = chTimeI2MS(state->nextDeadline - state->lastDeadline);
+    stats->duration = chTimeI2MS(state->lastComplete - stats->lastWake);
     stats->lastWake = state->nextWake;
 }
