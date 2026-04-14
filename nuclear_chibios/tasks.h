@@ -14,7 +14,7 @@ extern TaskState taskCBState;
 void taskCB(void);
 // Monitor all other tasks for period, duration, average actual duration, and failure/rejection counts
 extern TaskState taskMState;
-extern TaskStats taskStats[6] = { 0 };
+extern TaskStats taskStats[6];
 extern mutex_t taskStatsMutex;
 void taskM(void);
 // Send taskM data over Serial using IPC, non-preemptable

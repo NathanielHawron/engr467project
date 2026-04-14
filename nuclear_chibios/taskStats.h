@@ -9,6 +9,7 @@ typedef struct _task_state {
 } TaskState;
 typedef struct _task_stats {
     uint32_t period;
+    // Previous nextWake
     uint32_t lastWake;
     uint32_t duration;
     uint32_t failureCount;

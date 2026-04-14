@@ -5,7 +5,9 @@
 #include "hal.h"
 
 // Enters a critical section, runs code, then leaves (ensures lock/unlock pairs)
-#define CRITICAL_SECTION(x) chSysLock();x chSysUnlock();
+#define CRITICAL_SECTION(x) chSysLock();  \
+x                                         \
+chSysUnlock();
 
 // Blink built-in LED at a frequency
 void taskB(void) {
@@ -103,7 +105,37 @@ void taskC(void) {
 // Try to fail other tasks, using methods that work on naive task schedulers (100% utilization, short tasks, acquire unused resources indefinately, aqcuire random resources)
 void taskF(void) {
   TaskState taskFState = { 0 };
-  while(1){
+  // Three task states
+  // Fail NPC, hold a random mutex and sleep
+  const uint8_t acquireResources = 0;
+  // Fails RM, shortest task but constant
+  const uint8_t shortTask = 1;
+  // Fails any non-preemptive scheduler
+  const uint8_t fullUtilization = 2;
 
+  mutex_t mut;
+  chMtxObjectInit(&mut);
+  
+  uint8_t currentTask = acquireResources;
+  while(1){
+    switch(currentTask){
+      case acquireResources:{
+        // Acquire random mutex, hold it for 1 second (long enough to fail other tasks), then release it
+        // NPC would prevent preemption while lock is held, ChibiOS should not
+        chMtxLock(&mut);
+        chThdSleepFor(TIME_MS2I(1000));
+        chMtxUnlock(&mut);
+
+        updateTaskState(&taskMState, 500, 100);
+        // Wait until next release
+        chThdSleepUntil(taskMState.nextWake);
+      }break;
+      case shortTask:{
+
+      }break;
+      case fullUtilization:{
+
+      };break;
+    }
   }
 }
