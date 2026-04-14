@@ -16,6 +16,8 @@ typedef struct _task_stats {
     uint32_t failureCount;
 } TaskStats;
 
-inline void reviewTask(TaskStats* stat, TaskState* ts) {
-    // do something...
-}
+// wakeupDelay is period
+void updateTaskState(TaskState *taskState, int wakeupDelay, int maxTimeToComplete);
+
+void reviewTask(TaskStats* stats, TaskState* state);
+

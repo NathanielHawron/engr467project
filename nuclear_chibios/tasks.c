@@ -4,14 +4,26 @@
 #include "ch.h"
 #include "hal.h"
 
+// Enters a critical section, runs code, then leaves (ensures lock/unlock pairs)
+#define CRITICAL_SECTION(x) do {        \
+    chSysLock();                        \
+    x;                                  \
+    chSysUnlock();                      \
+  } while (0); 
+
+TaskState taskBState = { 0 };
+TaskState taskCBState = { 0 };
+TaskState taskMState = { 0 };
+TaskState taskSState = { 0 };
+TaskState taskCState = { 0 };
+TaskState taskFState = { 0 };
+
 // Blink built-in LED at a frequency
 void taskB() {
   // In ms
   static int blinkDuration = 1000;
   // Time between release and dedline
   static int maxDelay = 100;
-
-  TaskState taskBState = { 0 };
 
   while (1) {
     // Start Task
@@ -45,52 +57,57 @@ void taskCB() {
   };
   static int durationIndex = 0;
 
-  TaskState taskCBState = { 0 };
-
   while(1){
     // Start Task
     durationIndex = (durationIndex+1)%10;
     chMBPostI(&taskBInbox, (msg_t)durations[durationIndex]);
     // End Task
     
-    // Move current stats into previous stats
-    taskCBState.lastComplete = chVTGetSystemTime();
-    taskCBState.lastDeadline = taskCBState.nextDeadline;
-    // Determine next wakeup and deadline timestamp
-    taskCBState.nextWake += TIME_MS2I(changeDelay);
-    taskCBState.nextDeadline = taskCBState.nextWake + TIME_MS2I(maxDelay);
-    // Increment complete count, should be at most 1 when checked once per frame
-    ++taskCBState.completesSinceLastCheck;
+    updateTaskState(&taskCBState, changeDelay, maxDelay);
     // Wait until next release
     chThdSleepUntil(taskCBState.nextWake);
   }
 }
 // Monitor all other tasks for period, duration, average actual duration, and failure/rejection counts
-void taskM() {
-  TaskState taskMState = { 0 };
+void taskM(void) {
+  // Period should be lower than any other period, except task F since its malicious
+  static int period = 100;
+  static int maxDelay = 75;
+  TaskState *taskStates[6] = {
+    &taskBState, &taskCBState, &taskMState, &taskSState, &taskCState, &taskFState
+  };
+  
   while(1){
+    // Start task
+    chMtxLock(&taskStatsMutex);
+    for(int i=0;i<6;++i){
+      reviewTask(&taskStats[i], taskStates[i]);
+    }
+    chMtxUnlock(&taskStatsMutex);
+    // End task
+    updateTaskState(&taskMState, period, maxDelay);
+    // Wait until next release
+    chThdSleepUntil(taskMState.nextWake);
   }
 }
 // Send taskM data over Serial using IPC, non-preemptable
-void taskS() {
-  TaskState taskSState = { 0 };
-  // Enter critical section
-  chSysLock();
-
-  // Leave critical section
-  chSysUnlock();
+void taskS(void) {
+  while(1){
+    CRITICAL_SECTION(
+  
+    )
+  }
 }
 // Compute math operations provided by Serial, non-preemptable
-void taskC() {
-  TaskState taskCState = { 0 };
-  // Enter critical section
-  chSysLock();
-
-  // Leave critical section
-  chSysUnlock();
+void taskC(void) {
+  while(1){
+    CRITICAL_SECTION(
+  
+    )
+  }
 }
 // Try to fail other tasks, using methods that work on naive task schedulers (100% utilization, short tasks, acquire unused resources indefinately, aqcuire random resources)
-void taskF() {
-  TaskState taskFState = { 0 };
-
+void taskF(void) {
+  while(1){
+  }
 }

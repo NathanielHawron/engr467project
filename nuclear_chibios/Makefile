@@ -14,7 +14,7 @@ BUILDDIR := ./build
 DEPDIR := ./.dep
 
 # Project source files only.
-CSRC := main.c tasks.c
+CSRC := main.c tasks.c taskStats.c
 CPPSRC :=
 UINCDIR := ./
 UDEFS :=

@@ -4,16 +4,18 @@
 #include "ch.h"
 
 // Blink built-in LED at a frequency
-extern TaskState taskBState; // defined in main.c !
+extern TaskState taskBState;
 extern mailbox_t taskBInbox; // defined in main.c !
-extern msg_t taskBInboxBuffer;
-void taskB();
+extern msg_t taskBInboxBuffer; // defined in main.c !
+void taskB(void);
 // Set the frequency of taskB using ICP
 extern TaskState taskCBState;
 void taskCB();
 // Monitor all other tasks for period, duration, average actual duration, and failure/rejection counts
 extern TaskState taskMState;
-void taskM();
+extern TaskStats taskStats[6]; // defined in main.c !
+extern mutex_t taskStatsMutex; // defined in main.c !
+void taskM(void);
 // Send taskM data over Serial using IPC, non-preemptable
 extern TaskState taskSState;
 void taskS();
