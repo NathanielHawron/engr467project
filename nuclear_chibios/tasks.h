@@ -9,7 +9,7 @@ extern TaskState taskBState; // defined in main.c !
 extern mailbox_t taskBInbox; // defined in main.c !
 extern msg_t taskBInboxBuffer;
 void taskB(void);
-// Set the frequency of taskB using ICP
+// Set the frequency of taskB using IPC
 extern TaskState taskCBState;
 void taskCB(void);
 // Monitor all other tasks for period, duration, average actual duration, and failure/rejection counts

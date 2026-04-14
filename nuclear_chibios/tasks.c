@@ -46,7 +46,7 @@ void taskB(void) {
   }
 }
 
-// Set the frequency of taskB using ICP
+// Set the frequency of taskB using IPC
 void taskCB(void) {
   // In ms
   static int changeDelay = 10000;
@@ -99,11 +99,7 @@ void taskS(void) {
   const char* msg = "Hello, World!\r\n";
 
   const char* taskNames[6] = {
-    "taskB", "TaskCB",
-    "taskM",
-    "taskS",
-    "taskC",
-    "taskF"
+    "taskB", "TaskCB", "taskM", "taskS", "taskC", "taskF"
   };
 
   static int period = 2000;
@@ -113,6 +109,7 @@ void taskS(void) {
     CRITICAL_SECTION(
       sdWriteTimeout(&SD2, (const uint8_t *)msg, strlen(msg), TIME_IMMEDIATE);
 
+      chMtxLock(&taskStatsMutex);
       for (int i = 0; i < 6; ++i) {
         TaskStats *stats = &taskStats[i];
         uint32_t period = stats->period;
@@ -123,6 +120,7 @@ void taskS(void) {
                  "%s:\r\n\tperiod: %lu\r\n\tduration: %lu\r\n\tfailures: %lu\r\n",
                  taskNames[i], period, duration, failureCount);
       }
+      chMtxUnlock(&taskStatsMutex);
     )
     updateTaskState(&taskSState, period, maxDelay);
     // Wait until next release
