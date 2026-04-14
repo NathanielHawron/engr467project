@@ -1,7 +1,11 @@
 #include "tasks.h"
 #include "taskStats.h"
 
+<<<<<<< HEAD
 #include <string.h>
+=======
+#include "math.h"
+>>>>>>> ec3ba01 (Implemented taskF)
 
 #include "ch.h"
 #include "hal.h"
@@ -138,6 +142,9 @@ void taskF(void) {
   chMtxObjectInit(&mut);
   
   uint8_t currentTask = acquireResources;
+  // Prevent compiler optimization of expensive operation
+  volatile double num = (double)mut;
+  volatile double den = (num-1.1) * 1.7;
   while(1){
     switch(currentTask){
       case acquireResources:{
@@ -147,15 +154,39 @@ void taskF(void) {
         chThdSleepFor(TIME_MS2I(1000));
         chMtxUnlock(&mut);
 
-        updateTaskState(&taskMState, 500, 100);
+        updateTaskState(&taskMState, 1, 100);
+        // Wait until next release
+        chThdSleepUntil(taskMState.nextWake);
+        
+        currentTask = shortTask;
+      }break;
+      case shortTask:{
+        // Run 1ms tasks every ms for 1 second
+        // RM would fail, since this is the shortest task
+        for(uint_fast16_t i=0;i<1000;++i){
+          // Burn some clock cycles
+          double s = sqrt(sin(cos(tan(num/den))));
+          updateTaskState(&taskMState, 1, 100);
+          // Wait until next release
+          chThdSleepUntil(taskMState.nextWake);
+        }
+        currentTask = fullUtilization;
+        // Next task has different deadline requirements
+        updateTaskState(&taskMState, 100, 10000);
         // Wait until next release
         chThdSleepUntil(taskMState.nextWake);
       }break;
-      case shortTask:{
-
-      }break;
       case fullUtilization:{
-
+        for(uint16_t i=0;i<10000;++i){
+          // Burn some clock cycles
+          for(uint16_t j=0;j<100;++j){
+            volatile double s = sqrt(sin(cos(tan(num/den))));
+          }
+        }
+        updateTaskState(&taskMState, 2000, 100);
+        // Wait until next release
+        chThdSleepUntil(taskMState.nextWake);
+        currentTask = acquireResources;
       };break;
     }
   }
