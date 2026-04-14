@@ -23,6 +23,6 @@ void reviewTask(TaskStats* stats, TaskState* state) {
       ++stats->failureCount;
   }
   stats->period = state->nextDeadline - state->lastDeadline;
-  stats->duration = state->lastComplete - stats->lastWake;
-  stats->lastWake = state->nextWake;
+  stats->duration = state->lastComplete - state->lastWake;
+  state->lastWake = state->nextWake; // TODO: is this right?
 }
