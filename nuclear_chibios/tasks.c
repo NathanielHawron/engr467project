@@ -1,11 +1,8 @@
 #include "tasks.h"
 #include "taskStats.h"
 
-<<<<<<< HEAD
 #include <string.h>
-=======
-#include "math.h"
->>>>>>> ec3ba01 (Implemented taskF)
+#include <math.h>
 
 #include "ch.h"
 #include "hal.h"
@@ -101,10 +98,6 @@ void taskM(void) {
 void taskS(void) {
   const char* msg = "Hello, World!\r\n";
 
-  TaskState *taskStates[6] = {
-    &taskBState, &taskCBState, &taskMState, &taskSState, &taskCState, &taskFState
-  };
-
   static int period = 500;
   static int maxDelay = 500;
   
@@ -143,7 +136,7 @@ void taskF(void) {
   
   uint8_t currentTask = acquireResources;
   // Prevent compiler optimization of expensive operation
-  volatile double num = (double)mut;
+  volatile double num = (double)(int32_t)mut.owner;
   volatile double den = (num-1.1) * 1.7;
   while(1){
     switch(currentTask){
@@ -151,7 +144,7 @@ void taskF(void) {
         // Acquire random mutex, hold it for 1 second (long enough to fail other tasks), then release it
         // NPC would prevent preemption while lock is held, ChibiOS should not
         chMtxLock(&mut);
-        chThdSleepFor(TIME_MS2I(1000));
+        chThdSleep(TIME_MS2I(1000));
         chMtxUnlock(&mut);
 
         updateTaskState(&taskMState, 1, 100);
