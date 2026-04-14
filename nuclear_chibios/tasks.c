@@ -113,11 +113,60 @@ void taskS(void) {
 
 // Compute math operations provided by Serial, non-preemptable
 void taskC(void) {
-  
   while(1){
+    char buff[64] = eq;
+    // Wait for serial input
+    taskState->nextWake = chVTGetSystemTime();
+    taskCState->nextDeadline = chTimeAddX(taskCState->nextWake, TIME_MS2I(5000));
     CRITICAL_SECTION(
-  
+      // Read serial input
     )
+    int index = 0;
+    int a = 0;
+    int b = 0;
+    char op;
+    int res;
+    uint_fast8_t abort = 0;
+    while(abort == 0 && '0' <= buff[index] && buff[index] <= '9'){
+      a*=10;
+      a+= buff[index++]-'0';
+      if(index >= 63){
+        abort = 1;
+      }
+    }
+    if(abort == 0){
+      op = buff[index++];
+    }
+    while(abort == 0 && '0' <= buff[index] && buff[index] <= '9'){
+      b*=10;
+      b+= buff[index++]-'0';
+      if(index >= 64){
+        abort = 1;
+      }
+    }
+    switch(op){
+      case '+':{
+        res = a+b;
+      }break;
+      case '-':{
+        res = a-b;
+      }break;
+      case '*':{
+        res = a*b;
+      }break;
+      case '/':{
+        res = a/b;
+      }break;
+      default:{
+        abort = 1;
+      }break;
+    }
+    if(abort == 0){
+      // Send to task M mailbox
+    }
+    taskCState->lastComplete = chVTGetSystemTime();
+    taskCState->lastDeadline = taskCState->nextDeadline;
+    ++taskCState->completesSinceLastCheck;
   }
 }
 
