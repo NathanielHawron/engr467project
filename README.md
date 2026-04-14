@@ -1,7 +1,7 @@
 # ENGR 467 Course Project &ndash; "Nuclear ChibiOS"
 
 This course project provides the scheduling and IPC capabilities of ChibiOS
-on the NUCLEO-H563ZI STM32 development board.
+on a STM32 NUCLEO development board.
 
 ## Software Requirements
 

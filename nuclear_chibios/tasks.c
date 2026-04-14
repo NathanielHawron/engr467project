@@ -96,7 +96,7 @@ void taskM(void) {
 
 // Send taskM data over Serial using IPC, non-preemptable
 void taskS(void) {
-  const char* msg = "Hello, World!\r\n";
+  const char* msg = "\r\nThread Statistics:\r\n\n";
 
   const char* taskNames[6] = {
     "taskB", "TaskCB", "taskM", "taskS", "taskC", "taskF"
@@ -107,7 +107,7 @@ void taskS(void) {
   
   while(1) {
     CRITICAL_SECTION(
-      sdWriteTimeout(&SD2, (const uint8_t *)msg, strlen(msg), TIME_IMMEDIATE);
+      sdWriteTimeout(&SD2, (const uint8_t *)msg, strlen(msg), TIME_MS2I(1));
 
       chMtxLock(&taskStatsMutex);
       for (int i = 0; i < 6; ++i) {
