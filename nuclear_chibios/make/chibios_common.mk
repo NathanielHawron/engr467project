@@ -31,6 +31,7 @@ include $(OSAL_MK)
 include $(RT_MK)
 include $(PORT_MK)
 include $(CHIBIOS)/tools/mk/autobuild.mk
+include $(CHIBIOS)/os/common/oop/oop.mk
 
 LDSCRIPT := $(STARTUPLD)/$(LDSCRIPT_NAME)
 

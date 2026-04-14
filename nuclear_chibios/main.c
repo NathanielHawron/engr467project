@@ -56,9 +56,9 @@ int main(void) {
   chThdCreateStatic(waThread_CB, sizeof(waThread_CB), NORMALPRIO, Thread_CB, NULL);
   chThdCreateStatic(waThread_M, sizeof(waThread_M), NORMALPRIO, Thread_M, NULL);
 
-  chThdCreateStatic(waThread_S, sizeof(waThread_S), NORMALPRIO, Thread_S, NULL);
+  chThdCreateStatic(waThread_S, sizeof(waThread_S), NORMALPRIO+1, Thread_S, NULL);
   // chThdCreateStatic(waThread_C, sizeof(waThread_C), NORMALPRIO, Thread_C, NULL);
-  // chThdCreateStatic(waThread_F, sizeof(waThread_F), NORMALPRIO, Thread_F, NULL);
+  chThdCreateStatic(waThread_F, sizeof(waThread_F), NORMALPRIO, Thread_F, NULL);
 
   /*
    * Normal main() thread activity, in this demo it does nothing except

@@ -98,12 +98,32 @@ void taskM(void) {
 void taskS(void) {
   const char* msg = "Hello, World!\r\n";
 
-  static int period = 500;
-  static int maxDelay = 500;
+  const char* taskNames[6] = {
+    "taskB",
+    "TaskCB",
+    "taskM",
+    "taskS",
+    "taskCS",
+    "taskF"
+  };
+
+  static int period = 2000;
+  static int maxDelay = 1000;
   
   while(1) {
     CRITICAL_SECTION(
       sdWriteTimeout(&SD2, (const uint8_t *)msg, strlen(msg), TIME_IMMEDIATE);
+
+      for (int i = 0; i < 6; ++i) {
+        TaskStats *stats = &taskStats[i];
+        uint32_t period = stats->period;
+        uint32_t duration = stats->period;
+        uint32_t failureCount = stats-> failureCount;
+
+        // chprintf((sequential_stream_i *)&SD2,
+        //          "%s:\r\n\tperiod: %lu\r\n\tduration: %lu\r\n\tfailures: %lu\r\n",
+        //          taskNames[i], period, duration, failureCount);
+      }
     )
     updateTaskState(&taskMState, period, maxDelay);
     // Wait until next release
