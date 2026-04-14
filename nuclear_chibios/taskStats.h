@@ -9,10 +9,8 @@ typedef struct _task_state {
 } TaskState;
 typedef struct _task_stats {
     uint32_t period;
-    uint32_t durationHistory[100];
+    uint32_t lastWake;
     uint32_t duration;
-    uint_fast8_t durationHistoryIndex;
-    uint32_t rejectionCount;
     uint32_t failureCount;
 } TaskStats;
 

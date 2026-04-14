@@ -21,7 +21,7 @@ TaskState taskCState = { 0 };
 TaskState taskFState = { 0 };
 
 // Blink built-in LED at a frequency
-void taskB() {
+void taskB(void) {
   // In ms
   static int blinkDuration = 1000;
   // Time between release and dedline
@@ -36,20 +36,14 @@ void taskB() {
     }
     // End Task
     
-    // Move current stats into previous stats
-    taskBState.lastComplete = chVTGetSystemTime();
-    taskBState.lastDeadline = taskBState.nextDeadline;
-    // Determine next wakeup and deadline timestamp
-    taskBState.nextWake += TIME_MS2I(blinkDuration);
-    taskBState.nextDeadline = taskBState.nextWake + TIME_MS2I(maxDelay);
-    // Increment complete count, should be at most 1 when checked once per frame
-    ++taskBState.completesSinceLastCheck;
+    updateTaskState(&taskBState, blinkDuration, maxDelay);
     // Wait until next release
     chThdSleepUntil(taskBState.nextWake);
   }
 }
+
 // Set the frequency of taskB using ICP
-void taskCB() {
+void taskCB(void) {
   // In ms
   static int changeDelay = 10000;
   // Time between release and deadline
@@ -70,6 +64,7 @@ void taskCB() {
     chThdSleepUntil(taskCBState.nextWake);
   }
 }
+
 // Monitor all other tasks for period, duration, average actual duration, and failure/rejection counts
 void taskM(void) {
   // Period should be lower than any other period, except task F since its malicious
@@ -92,6 +87,7 @@ void taskM(void) {
     chThdSleepUntil(taskMState.nextWake);
   }
 }
+
 // Send taskM data over Serial using IPC, non-preemptable
 void taskS(void) {
   const char *msg = "Hello, World!";
@@ -108,6 +104,7 @@ void taskS(void) {
     chThdSleepUntil(taskSState.nextWake);
   }
 }
+
 // Compute math operations provided by Serial, non-preemptable
 void taskC(void) {
   while(1){
@@ -116,6 +113,7 @@ void taskC(void) {
     )
   }
 }
+
 // Try to fail other tasks, using methods that work on naive task schedulers (100% utilization, short tasks, acquire unused resources indefinately, aqcuire random resources)
 void taskF(void) {
   while(1){
