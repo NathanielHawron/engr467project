@@ -3,9 +3,15 @@
 
 #include "tasks.h"
 
+static SerialConfig uartCfg = {
+  .speed = 115200,
+  .cr2 = USART_CR2_STOP1_BITS
+};
 
 msg_t taskBInboxBuffer;
 mailbox_t taskBInbox;
+
+mutex_t taskStatsMutex;
 
 static THD_WORKING_AREA(waThread_B, 128);
 static THD_WORKING_AREA(waThread_CB, 128);
@@ -44,12 +50,13 @@ int main(void) {
   chMBObjectInit(&taskBInbox, &taskBInboxBuffer, 1);
   chMtxObjectInit(&taskStatsMutex);
 
+  sdStart(&SD2, &uartCfg);
 
   chThdCreateStatic(waThread_B, sizeof(waThread_B), NORMALPRIO, Thread_B, NULL);
   chThdCreateStatic(waThread_CB, sizeof(waThread_CB), NORMALPRIO, Thread_CB, NULL);
   chThdCreateStatic(waThread_M, sizeof(waThread_M), NORMALPRIO, Thread_M, NULL);
 
-  // chThdCreateStatic(waThread_S, sizeof(waThread_S), NORMALPRIO, Thread_S, NULL);
+  chThdCreateStatic(waThread_S, sizeof(waThread_S), NORMALPRIO, Thread_S, NULL);
   // chThdCreateStatic(waThread_C, sizeof(waThread_C), NORMALPRIO, Thread_C, NULL);
   // chThdCreateStatic(waThread_F, sizeof(waThread_F), NORMALPRIO, Thread_F, NULL);
 

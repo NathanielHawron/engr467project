@@ -6,7 +6,7 @@ USE_OPT ?= -Os -ggdb -fomit-frame-pointer -falign-functions=16
 USE_COPT ?=
 USE_CPPOPT ?= -fno-rtti
 USE_LINK_GC ?= yes
-USE_LDOPT ?=
+USE_LDOPT ?= -lm
 USE_LTO ?= yes
 USE_VERBOSE_COMPILE ?= no
 USE_SMART_BUILD ?= yes
