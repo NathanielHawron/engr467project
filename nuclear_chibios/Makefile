@@ -6,7 +6,7 @@ PROJECT := nuclear_chibios
 
 # Select target here, or override from command line:
 #   make TARGET=target_h563
-TARGET ?= target_f042
+TARGET ?= target_h563
 
 CHIBIOS := ../ChibiOS
 CONFDIR := ./cfg
